@@ -3,9 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "description": "Local-first agentic assistant: tool loops, retrieval memory, task worker, sandboxed code, route-aware models.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Nick-VeraLuxAI/Agentic-Vera.git"
+  },
   "scripts": {
     "start": "node server.js",
-    "lint": "node --check server.js core/*.js memory/*.js tools/*.js ui/script.js tests/*.test.js scripts/*.js",
+    "lint": "node --check server.js core/*.js memory/*.js orchestration/*.js tools/*.js ui/script.js tests/*.test.js scripts/*.js",
     "test": "node --test tests/*.test.js",
     "smoke:ci": "node --test scripts/smoke-ci.js",
     "backup:memory": "node scripts/backup-memory.js",

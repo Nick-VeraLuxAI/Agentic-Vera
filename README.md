@@ -43,6 +43,10 @@ Then open the UI (served by the app) or call the HTTP API on port **3000** (loca
 
 Copy `.env.example` to `.env` and tune retrieval, tool iteration limits, router, worker, and optional sandbox variables.
 
+## CI
+
+GitHub Actions runs `npm ci`, `npm run lint`, and `npm test` on pushes and pull requests to `main`.
+
 ## Origin
 
 Derived from the **Vera Modular-Offline** project; this repo focuses on the agentic execution and operations layers rather than the full upstream binary and build tree.

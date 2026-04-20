@@ -16,6 +16,40 @@
           "event": "task_created"
         }
       ]
+    },
+    {
+      "id": "b762c208-f6f0-476d-bd2b-70b7e5692b35",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776652592556,
+      "updatedAt": 1776652592560,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T02:36:32.560Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "56f70383-780b-47dd-9ac8-6bec8803b9df",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776652602238,
+      "updatedAt": 1776652602244,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T02:36:42.244Z",
+          "event": "task_created"
+        }
+      ]
     }
   ]
 }
