@@ -1,0 +1,32 @@
+{
+  "name": "agentic-vera",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first agentic assistant: tool loops, retrieval memory, task worker, sandboxed code, route-aware models.",
+  "scripts": {
+    "start": "node server.js",
+    "lint": "node --check server.js core/*.js memory/*.js tools/*.js ui/script.js tests/*.test.js scripts/*.js",
+    "test": "node --test tests/*.test.js",
+    "smoke:ci": "node --test scripts/smoke-ci.js",
+    "backup:memory": "node scripts/backup-memory.js",
+    "restore:memory": "node scripts/restore-memory.js",
+    "approve:finetune-session": "node scripts/approve-finetune-session.js",
+    "prepare:finetune-dataset": "node scripts/prepare-finetune-dataset.js",
+    "train:finetune": "node scripts/run-finetune.js",
+    "evals:run": "node scripts/run-evals.js",
+    "worker:start": "node scripts/run-worker.js",
+    "retrieval:backfill-embeddings": "node scripts/backfill-retrieval-embeddings.js",
+    "sandbox:prepare-images": "node scripts/prepare-sandbox-images.js"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "dompurify": "^3.3.1",
+    "express": "^5.1.0",
+    "mammoth": "^1.11.0",
+    "multer": "^2.0.2",
+    "qs": "^6.15.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.2.2"
+  }
+}

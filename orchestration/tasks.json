@@ -1,0 +1,21 @@
+{
+  "tasks": [
+    {
+      "id": "52ffa497-ffa3-4696-a785-ae2c525e3c8c",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776652519231,
+      "updatedAt": 1776652519235,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T02:35:19.235Z",
+          "event": "task_created"
+        }
+      ]
+    }
+  ]
+}

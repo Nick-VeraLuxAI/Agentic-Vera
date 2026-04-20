@@ -1,0 +1,1 @@
+# Local embedding logic (can use Mistral or MiniLM)

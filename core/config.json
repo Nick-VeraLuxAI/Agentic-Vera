@@ -1,0 +1,8 @@
+{
+  "base_model_path": "models/JSON-llama3-fp16.Q4_K_M.gguf",
+  "lora_path": "brains/vera-coder/adapter.safetensors",
+  "default_brain": "vera-coder",
+  "prompt_template": "instruct",
+  "max_tokens": 256,
+  "test_prompt": "Write a JavaScript function to reverse a string."
+}

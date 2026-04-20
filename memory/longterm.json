@@ -1,0 +1,52 @@
+[
+    {
+      "type": "preference",
+      "subject": "coffee",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I love coffee."
+    },
+    {
+      "type": "identity",
+      "subject": "faith in Jesus",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I love Jesus with all of my heart."
+    },
+    {
+      "type": "identity",
+      "subject": "fatherhood",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I am a father."
+    },
+    {
+      "type": "identity",
+      "subject": "married",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I am married."
+    },
+    {
+      "type": "preference",
+      "subject": "entrepreneurship",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I am excited about entrepreneurship."
+    },
+    {
+      "type": "identity",
+      "subject": "having wonderful kids",
+      "sentiment": "positive",
+      "confidence": 1.0,
+      "original": "I have wonderful kids."
+    },
+    {
+      "type": "identity",
+      "subject": "baldness",
+      "sentiment": "neutral",
+      "confidence": 1.0,
+      "original": "I am bald."
+    }
+  ]
+  

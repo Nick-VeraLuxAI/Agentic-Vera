@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-02-24T05:38:39.205Z",
+  "cases": 3,
+  "averageScore": 1,
+  "results": [
+    {
+      "id": "memory-recall-basic",
+      "route": "default",
+      "routeReason": "router_disabled",
+      "expectationScore": 1,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "coding-route",
+      "route": "default",
+      "routeReason": "router_disabled",
+      "expectationScore": 1,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "file-analysis",
+      "route": "default",
+      "routeReason": "router_disabled",
+      "expectationScore": 1,
+      "routePass": true,
+      "score": 1
+    }
+  ]
+}

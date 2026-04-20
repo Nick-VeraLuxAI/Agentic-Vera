@@ -1,0 +1,5 @@
+{"instruction": "Write a Python function to reverse a string.", "input": "", "output": "def reverse_string(s):\n    return s[::-1]"}
+{"instruction": "Fix this bug in the function.", "input": "def multiply(x, y):\n    return x + y", "output": "def multiply(x, y):\n    return x * y"}
+{"instruction": "Explain what this Python code does.", "input": "for i in range(5): print(i)", "output": "This code prints numbers from 0 to 4 using a for loop."}
+{"instruction": "Convert this for loop to a list comprehension.", "input": "result = []\nfor x in range(10):\n    result.append(x * 2)", "output": "result = [x * 2 for x in range(10)]"}
+{"instruction": "Generate HTML for a simple contact form with name and email.", "input": "", "output": "<form>\n  <label>Name:</label>\n  <input type='text' name='name'>\n  <label>Email:</label>\n  <input type='email' name='email'>\n  <button type='submit'>Submit</button>\n</form>"}

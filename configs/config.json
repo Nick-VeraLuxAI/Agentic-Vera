@@ -1,0 +1,8 @@
+{
+  "base_model_path": "models/JSON-llama3-fp16.Q4_K_M.gguf",
+  "llama_cpp_path": "./main",
+  "default_brain": "vera-core",
+  "default_max_tokens": 256,
+  "default_prompt_style": "instruct",
+  "logging_enabled": true
+}

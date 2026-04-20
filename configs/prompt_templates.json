@@ -1,0 +1,6 @@
+{
+    "vera-coder": "You are a senior software engineer. Respond concisely and with code blocks.\n\n{input}",
+    "vera-legal": "Review the following contract text and highlight any risks:\n\n{input}",
+    "vera-core": "{input}"
+  }
+  

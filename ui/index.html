@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vera</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ✅ Markdown + Syntax Highlighting (Offline) -->
+  <link rel="stylesheet" href="./libs/github-dark.min.css" />
+  <script src="./libs/marked.min.js"></script>
+  <script src="./libs/highlight.min.js"></script>
+  <script src="/libs/dompurify.min.js"></script>
+
+  <!-- ✅ PDF.js (Offline Module Import) -->
+  <script type="module">
+    import * as pdfjsLib from './libs/pdfjs/pdf.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './libs/pdfjs/pdf.worker.mjs';
+    window.pdfjsLib = pdfjsLib;
+  </script>
+
+  <!-- ✅ Markdown + Code highlight helper -->
+  <script>
+    function renderMarkdownWithHighlight(text) {
+      const html = marked.parse(String(text || ""));
+      const safeHtml = DOMPurify.sanitize(html, {
+        USE_PROFILES: { html: true },
+        FORBID_TAGS: ["style", "script", "iframe", "object", "embed", "form", "input", "button"],
+        FORBID_ATTR: ["style", "onerror", "onload", "onclick", "onmouseover", "onfocus"]
+      });
+      const safeRoot = document.createElement("div");
+      safeRoot.innerHTML = safeHtml;
+      safeRoot.querySelectorAll("pre code").forEach(block => {
+        hljs.highlightElement(block);
+      });
+      return safeRoot.innerHTML;
+    }
+  </script>
+</head>
+
+<body>
+  <div id="vera-app">
+
+    <button id="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded="true">☰</button>
+    
+    <!-- ✅ Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">Vera</div>
+      <nav class="sidebar-tabs" role="tablist" aria-label="Sidebar tabs">
+        <button type="button" class="tab active" data-tab="conversations">Conversations</button>
+        <button type="button" class="tab" data-tab="memory">Memory</button>
+        <button type="button" class="tab" data-tab="files">Files</button>
+        <button type="button" class="tab" data-tab="projects">Projects</button>
+      </nav>
+      <div id="tab-content">
+        <!-- Placeholder for dynamic content -->
+        <div class="tab-panel active" data-tab="conversations">No conversations yet.</div>
+        <div class="tab-panel" data-tab="memory">No memory items yet.</div>
+        <div class="tab-panel" data-tab="files">No files uploaded.</div>
+        <div class="tab-panel" data-tab="projects">Create your first project.</div>
+      </div>
+    </aside>
+
+    <!-- ✅ Main Chat Area -->
+    <div id="chat-container">
+      <div class="chat-header">
+        <span>Vera</span>
+        <label class="theme-control" for="theme-select">
+          <span>Theme</span>
+          <select id="theme-select" aria-label="Theme selector">
+            <option value="system">System</option>
+            <option value="dark-glass">Dark Glass</option>
+            <option value="daylight-clean">Daylight Clean</option>
+            <option value="midnight-minimal">Midnight Minimal</option>
+            <option value="neo-terminal">Neo Terminal</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="chat-log" class="glass"></div>
+
+      <div id="typing-indicator" class="hidden">
+        <span>Vera is typing<span class="dot one">.</span><span class="dot two">.</span><span class="dot three">.</span></span>
+      </div>
+
+      <div id="chat-input" class="glass">
+        <label for="file-upload" id="upload-label">➕</label>
+        <input type="file" id="file-upload" multiple style="display: none;" />
+
+        <div id="file-preview" class="file-preview-area"></div>
+
+        <input type="text" id="message" placeholder="Ask Vera anything..." autocomplete="off" aria-label="Message input" />
+        <button id="send-btn" type="button" aria-label="Send message" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 🧠 Main Chat Logic -->
+  <script src="script.js"></script>
+</body>
+</html>

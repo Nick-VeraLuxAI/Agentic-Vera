@@ -1,0 +1,10 @@
+{
+  "email_tool": "Sends emails using local SMTP settings",
+  "file_utils": "Handles file operations like rename, delete, etc.",
+  "image_tool": "Generates or processes images using local AI",
+  "local_infer": "Runs local language model inference",
+  "code_sandbox": "Executes untrusted code in a Docker sandbox with strict limits",
+  "pdf_tool": "Extracts and summarizes PDF contents",
+  "search_tool": "Searches documents or knowledge base",
+  "summary_tool": "Creates summaries of text or documents"
+}

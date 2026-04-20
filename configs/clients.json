@@ -1,0 +1,13 @@
+{
+    "titan_spring": {
+      "status": "active",
+      "kb_path": "tools/vector_kb/clients/titan_spring/",
+      "enabled_brains": ["vera-legal", "vera-pdf"]
+    },
+    "verdant_landscaping": {
+      "status": "trial",
+      "kb_path": "tools/vector_kb/clients/verdant_landscaping/",
+      "enabled_brains": ["vera-coder", "vera-sales"]
+    }
+  }
+  

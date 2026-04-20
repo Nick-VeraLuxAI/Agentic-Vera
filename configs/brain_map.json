@@ -1,0 +1,7 @@
+{
+    "vera-coder": "brains/vera-coder/adapter.safetensors",
+    "vera-legal": "brains/vera-legal/adapter.safetensors",
+    "vera-pdf": "brains/vera-pdf/adapter.safetensors",
+    "vera-sales": "brains/vera-sales/adapter.safetensors"
+  }
+  

@@ -1,0 +1,9 @@
+{
+    "base_model": "mistral-7b",
+    "epochs": 4,
+    "learning_rate": 3e-4,
+    "batch_size": 16,
+    "tokenizer": "mistral",
+    "dataset_path": "dataset.jsonl"
+  }
+  

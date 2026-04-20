@@ -1,0 +1,25 @@
+[
+  {
+    "id": "memory-recall-basic",
+    "prompt": "Please remember I prefer dark mode interfaces.",
+    "expects": ["remember", "dark mode"],
+    "expectsResponse": ["dark mode"],
+    "retrievalQuery": "What interface preference did I mention?",
+    "retrievalExpects": ["dark mode"],
+    "routeHint": "default"
+  },
+  {
+    "id": "coding-route",
+    "prompt": "Debug this JavaScript stack trace and refactor the async code.",
+    "expects": ["debug", "async"],
+    "expectsResponse": ["debug", "async"],
+    "routeHint": "coder"
+  },
+  {
+    "id": "file-analysis",
+    "prompt": "Summarize this uploaded document and extract key requirements.",
+    "expects": ["summarize", "requirements"],
+    "expectsResponse": ["requirements", "summary"],
+    "routeHint": "file"
+  }
+]

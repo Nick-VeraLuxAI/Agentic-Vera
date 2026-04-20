@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Local secrets
+.env
+
+# llama.cpp build output (build from source; see README)
+build/
+
+# Large model weights (place your own .gguf under models/)
+models/*.gguf
+
+# Runtime / machine-local state
+memory/backups/
+memory/sessions/
+
+# Training outputs
+training/artifacts/
+training/dataset.jsonl
+
+# OS / editor
+.DS_Store
+*.log

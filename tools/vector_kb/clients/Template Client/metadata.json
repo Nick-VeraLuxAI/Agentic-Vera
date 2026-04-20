@@ -1,0 +1,26 @@
+{
+    "client": "titan_spring",
+    "files": [
+      {
+        "file_name": "AirframeSpecV7.pdf",
+        "path": "source_files/AirframeSpecV7.pdf",
+        "type": "pdf",
+        "uploaded": "2025-05-26",
+        "tags": ["airframe", "structural", "specification"],
+        "chunks": 124,
+        "embedding_model": "bge-small-en",
+        "notes": "Contains tensile strength details for alloy 7075"
+      },
+      {
+        "file_name": "WeldingGuidelines.txt",
+        "path": "source_files/WeldingGuidelines.txt",
+        "type": "txt",
+        "uploaded": "2025-05-25",
+        "tags": ["welding", "manufacturing"],
+        "chunks": 37,
+        "embedding_model": "bge-small-en",
+        "notes": "Internal procedures for certified welders"
+      }
+    ]
+  }
+  
