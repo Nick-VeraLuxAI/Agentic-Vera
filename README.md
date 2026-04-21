@@ -1,6 +1,6 @@
 # Agentic Vera
 
-Local-first assistant server built around **tool loops**, **retrieval-augmented memory**, **checkpointed background tasks**, optional **Docker code sandboxing**, and **route-aware** local model execution.
+Local-first assistant server built around **tool loops**, **retrieval-augmented memory** (SQLite as the system of record with legacy JSON import), **checkpointed background tasks** (including multi-step `agent_run` with **LLM outcome verification**), optional **Docker code sandboxing**, **multi-route GGUF routing** (keyword + `x-model-route` header), and **expanded tools** (workspace, arithmetic, gated HTTP fetch, etc.) with a default model from `VERA_MODEL_PATH`.
 
 This repository was split from the Vera offline stack to keep the agentic surface area (brain, tools, orchestration, memory, API) in one place.
 
@@ -10,7 +10,13 @@ This repository was split from the Vera offline stack to keep the agentic surfac
 - **Tools**: Search/summarize, nested inference, optional `code_sandbox` (`tools/runner.js`, `tools/tool_config.json`).
 - **Memory**: Short-term history, long-term facts, growing retrieval index from chat and uploads (`memory/`).
 - **Tasks**: Persisted queue + worker for inference/tool jobs (`orchestration/`, `npm run worker:start`).
-- **Router**: Optional heuristics to route prompts to different GGUF paths (`core/modelRouter.js`).
+- **Full agent loop**: `agent_run` supports **turn-based** (`[AGENT_DONE]`) or **structured plans** (`executionMode: "structured"` with `structuredPlan.steps[]`, programmatic checks, policy budgets, SQLite checkpoints, episodic `[EPISODE:]` lessons) — see `core/agentRunExecutor.js`.
+- **Plan synthesis**: `synthesizePlan: true` on an `agent_run` task generates a structured plan via LLM before execution (`core/planSynthesis.js`).
+- **Resume**: `resumeRunId` loads the checkpoint from a previous run (turn or structured) and continues.
+- **Human write approvals**: `workspace_write` tool + `approval_requests` table; APIs under `/api/agent/approvals/*`. Chat may return **428** with `approvalId` when a write needs approval.
+- **Webhooks & cron**: `POST /api/hooks/task` (header `x-vera-webhook-token`) enqueues any task; `VERA_SCHEDULER_ENABLED` + `/api/admin/schedules` for interval-based enqueue (`orchestration/scheduler.js`).
+- **Cursor-like chat modes**: HTTP headers `x-interaction-mode: ask|plan|debug|agent` and optional `x-agent-role: orchestrator|planner|coder|reviewer|researcher` (also accepted in JSON body for `/api/message`).
+- **Model routing**: Multi-route map via `VERA_MODEL_ROUTES` + keyword hints (`core/modelRouter.js`); override per request with header `x-model-route: <routeId>`. `VERA_MODEL_PATH` is the default GGUF.
 - **Hardening**: Request limits, timeouts, circuit breaker around the llama subprocess.
 
 ## Prerequisites
@@ -41,11 +47,11 @@ Then open the UI (served by the app) or call the HTTP API on port **3000** (loca
 
 ## Configuration
 
-Copy `.env.example` to `.env` and tune retrieval, tool iteration limits, router, worker, and optional sandbox variables.
+Copy `.env.example` to `.env` and tune retrieval, tool iteration limits, SQLite memory paths, worker, optional API key (`VERA_ADMIN_API_KEY` protects admin, memory, agent APIs, and `agent_run` task enqueue), and sandbox variables.
 
 ## CI
 
-GitHub Actions runs `npm ci`, `npm run lint`, and `npm test` on pushes and pull requests to `main`.
+GitHub Actions runs `npm ci`, `npm run lint`, and `npm run test:ci` on pushes and pull requests to `main`.
 
 ## Origin
 

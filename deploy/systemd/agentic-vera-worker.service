@@ -1,0 +1,14 @@
+[Unit]
+Description=Agentic Vera task worker
+After=network.target agentic-vera.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/agentic-vera
+EnvironmentFile=-/etc/agentic-vera.env
+ExecStart=/usr/bin/node scripts/run-worker.js
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

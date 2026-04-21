@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: agentic-vera
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  limits:
+    memory: 4Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClass: ""
+
+worker:
+  enabled: true
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi

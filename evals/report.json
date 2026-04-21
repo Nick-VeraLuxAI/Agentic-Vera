@@ -1,31 +1,40 @@
 {
-  "generatedAt": "2026-02-24T05:38:39.205Z",
+  "generatedAt": "2026-04-20T03:09:46.532Z",
+  "config": {
+    "useModel": false
+  },
   "cases": 3,
-  "averageScore": 1,
+  "averageScore": 0.7519,
   "results": [
     {
       "id": "memory-recall-basic",
       "route": "default",
-      "routeReason": "router_disabled",
+      "routeReason": "single_model",
       "expectationScore": 1,
+      "responseScore": 0,
+      "retrievalScore": 0,
       "routePass": true,
-      "score": 1
+      "score": 0.7
     },
     {
       "id": "coding-route",
       "route": "default",
-      "routeReason": "router_disabled",
+      "routeReason": "single_model",
       "expectationScore": 1,
+      "responseScore": 0,
+      "retrievalScore": null,
       "routePass": true,
-      "score": 1
+      "score": 0.7778
     },
     {
       "id": "file-analysis",
       "route": "default",
-      "routeReason": "router_disabled",
+      "routeReason": "single_model",
       "expectationScore": 1,
+      "responseScore": 0,
+      "retrievalScore": null,
       "routePass": true,
-      "score": 1
+      "score": 0.7778
     }
   ]
 }

@@ -50,6 +50,301 @@
           "event": "task_created"
         }
       ]
+    },
+    {
+      "id": "86fe649f-d919-459d-85e2-85ba6850b642",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776652963113,
+      "updatedAt": 1776652963118,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T02:42:43.118Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "e09f4ed5-3ee1-45aa-9778-ec2a53786a22",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776654565655,
+      "updatedAt": 1776654565660,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:09:25.660Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "e32817c1-5631-4675-83c1-45e60bbcd4a4",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776654599830,
+      "updatedAt": 1776654599835,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:09:59.835Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "7d5610a3-2967-4748-9f69-e71c0db8cd31",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776654949886,
+      "updatedAt": 1776654949891,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:15:49.891Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "19f1e917-fc5f-4d32-9912-34d726c347a2",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776655972310,
+      "updatedAt": 1776655972315,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:32:52.315Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "1cc22d0b-355d-40f3-ba61-524bd602e107",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776656488809,
+      "updatedAt": 1776656488813,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:41:28.813Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "49ee046a-449d-4b09-b280-1771e0bf7d5b",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776657210113,
+      "updatedAt": 1776657210118,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:53:30.118Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "02bd677c-3fa9-4e0a-9631-3c974ecd8b2a",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776657224501,
+      "updatedAt": 1776657224508,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:53:44.508Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "1a9872df-7a78-4961-9440-7f7059cc4c7b",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776657229588,
+      "updatedAt": 1776657229592,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:53:49.592Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "9aa53345-56be-4ab4-ba9e-41305ae052f7",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776657235759,
+      "updatedAt": 1776657235765,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T03:53:55.765Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "a74cae73-9a02-433a-bfa4-1915c47d5744",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776657844381,
+      "updatedAt": 1776657844386,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:04:04.386Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "11979365-beae-45e1-993e-83b970b7f33e",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776658520060,
+      "updatedAt": 1776658520065,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:15:20.065Z",
+          "event": "task_created"
+        }
+      ]
+    },
+    {
+      "id": "3b33de6c-cfbf-4525-831d-c8add027e554",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776660534906,
+      "updatedAt": 1776660534910,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:48:54.910Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "5a1af577-b632-4138-82bd-5ede76cec7e2",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776661016199,
+      "updatedAt": 1776661016204,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:56:56.204Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "46e85dea-551e-4924-a727-96767581461f",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776661066127,
+      "updatedAt": 1776661066133,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:57:46.132Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "f59e47b1-f460-4093-b3f5-dc3e6e43ddc9",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776661084801,
+      "updatedAt": 1776661084806,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T04:58:04.806Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "235affda-3f4e-4e2b-91b3-c4d910987fc2",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776661662910,
+      "updatedAt": 1776661662916,
+      "checkpoints": [
+        {
+          "ts": "2026-04-20T05:07:42.916Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
     }
-  ]
+  ],
+  "idempotencyIndex": {}
 }

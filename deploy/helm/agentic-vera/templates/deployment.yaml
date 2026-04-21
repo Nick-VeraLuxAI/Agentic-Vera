@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- if .Values.persistence.enabled }}
+      initContainers:
+        - name: init-dirs
+          image: busybox:1.36
+          command: ["sh", "-c", "mkdir -p /data/memory /data/orchestration"]
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      {{- end }}
+      containers:
+        - name: vera
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: VERA_MEMORY_DB_PATH
+              value: "/data/memory/vera_memory.db"
+            - name: VERA_TASK_QUEUE_FILE
+              value: "/data/orchestration/tasks.json"
+          envFrom:
+            - secretRef:
+                name: vera-secrets
+                optional: true
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 40
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        {{- if .Values.worker.enabled }}
+        - name: worker
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["node", "scripts/run-worker.js"]
+          env:
+            - name: VERA_MEMORY_DB_PATH
+              value: "/data/memory/vera_memory.db"
+            - name: VERA_TASK_QUEUE_FILE
+              value: "/data/orchestration/tasks.json"
+          envFrom:
+            - secretRef:
+                name: vera-secrets
+                optional: true
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+        {{- end }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Chart.Name }}-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}

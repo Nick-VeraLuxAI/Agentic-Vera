@@ -119,7 +119,7 @@ test("POST /api/message extracts text file content", async () => {
         return "ok";
       },
       sendStream: async () => {},
-      getModelRoute: () => ({ route: "file" }),
+      getModelRoute: () => ({ route: "default", reason: "single_model" }),
     },
   });
 
@@ -134,8 +134,8 @@ test("POST /api/message extracts text file content", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(response.body.reply, "ok");
-  assert.equal(response.headers["x-model-route"], "file");
-  assert.equal(capturedOptions?.route?.route, "file");
+  assert.equal(response.headers["x-model-route"], "default");
+  assert.equal(capturedOptions?.route?.route, "default");
   assert.match(capturedPrompt || "", /notes\.txt/);
   assert.match(capturedPrompt || "", /alpha/);
 });
@@ -145,16 +145,11 @@ test("GET /api/router/status returns router observability payload", async () => 
     brain: {
       send: async () => "ok",
       sendStream: async () => {},
-      getModelRoute: () => ({ route: "coder", reason: "heuristic_match" }),
+      getModelRoute: () => ({ route: "default", reason: "single_model" }),
       getRuntimeStatus: () => ({
         router: {
-          enabled: true,
+          mode: "single",
           defaultModelPath: "/models/default.gguf",
-          specialists: {
-            coder: { enabled: true, modelPath: "/models/coder.gguf" },
-            legal: { enabled: false, modelPath: "/models/default.gguf" },
-            file: { enabled: false, modelPath: "/models/default.gguf" },
-          },
         },
       }),
     },
@@ -167,9 +162,8 @@ test("GET /api/router/status returns router observability payload", async () => 
 
   const response = await request(app).get("/api/router/status");
   assert.equal(response.status, 200);
-  assert.equal(response.body.router.enabled, true);
+  assert.equal(response.body.router.mode, "single");
   assert.ok(typeof response.body.routeCounts.default === "number");
-  assert.ok(typeof response.body.routeCounts.coder === "number");
 });
 
 test("task queue endpoints create and fetch tasks", async () => {

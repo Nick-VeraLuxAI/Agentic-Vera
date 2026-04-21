@@ -9,6 +9,34 @@ function clearModule(modulePath) {
   delete require.cache[resolved];
 }
 
+function resetMemoryModules() {
+  try {
+    const resolved = require.resolve("../memory/db.js");
+    if (require.cache[resolved]) {
+      require("../memory/db.js").closeDbForTests();
+    }
+  } catch (_e) {
+    /* ignore */
+  }
+  const mods = [
+    "../memory/db.js",
+    "../memory/memoryStore.js",
+    "../memory/searchMemory.js",
+    "../memory/retrievalMemory.js",
+    "../memory/legacyImport.js",
+    "../memory/longTermMemory.js",
+    "../memory/exportSnapshot.js",
+    "../memory/memoryController.js",
+  ];
+  for (const m of mods) {
+    try {
+      delete require.cache[require.resolve(m)];
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+}
+
 function setMemoryEnv(root) {
   const previous = {
     VERA_LONGTERM_FILE: process.env.VERA_LONGTERM_FILE,
@@ -16,11 +44,13 @@ function setMemoryEnv(root) {
     VERA_BACKUPS_DIR: process.env.VERA_BACKUPS_DIR,
     VERA_BACKUP_MANIFEST_HMAC_KEY: process.env.VERA_BACKUP_MANIFEST_HMAC_KEY,
     VERA_MAX_BACKUP_AGE_MS: process.env.VERA_MAX_BACKUP_AGE_MS,
+    VERA_MEMORY_DB_PATH: process.env.VERA_MEMORY_DB_PATH,
   };
 
   process.env.VERA_LONGTERM_FILE = path.join(root, "longterm.json");
   process.env.VERA_SESSIONS_DIR = path.join(root, "sessions");
   process.env.VERA_BACKUPS_DIR = path.join(root, "backups");
+  process.env.VERA_MEMORY_DB_PATH = path.join(root, "vera_memory.db");
 
   return () => {
     if (previous.VERA_LONGTERM_FILE === undefined) delete process.env.VERA_LONGTERM_FILE;
@@ -33,6 +63,8 @@ function setMemoryEnv(root) {
     else process.env.VERA_BACKUP_MANIFEST_HMAC_KEY = previous.VERA_BACKUP_MANIFEST_HMAC_KEY;
     if (previous.VERA_MAX_BACKUP_AGE_MS === undefined) delete process.env.VERA_MAX_BACKUP_AGE_MS;
     else process.env.VERA_MAX_BACKUP_AGE_MS = previous.VERA_MAX_BACKUP_AGE_MS;
+    if (previous.VERA_MEMORY_DB_PATH === undefined) delete process.env.VERA_MEMORY_DB_PATH;
+    else process.env.VERA_MEMORY_DB_PATH = previous.VERA_MEMORY_DB_PATH;
   };
 }
 
@@ -43,6 +75,7 @@ test("long-term memory quarantines corrupted JSON", () => {
     fs.mkdirSync(root, { recursive: true });
     fs.writeFileSync(path.join(root, "longterm.json"), "{broken json", "utf8");
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/longTermMemory.js");
     const longTerm = require("../memory/longTermMemory.js");
@@ -66,6 +99,7 @@ test("short-term memory load survives corruption and save rewrites safely", asyn
     fs.mkdirSync(path.join(root, "sessions"), { recursive: true });
     fs.writeFileSync(path.join(root, "sessions", "abc.json"), "not-json", "utf8");
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/shortTermMemory.js");
     const shortTerm = require("../memory/shortTermMemory.js");
@@ -86,6 +120,11 @@ test("short-term memory load survives corruption and save rewrites safely", asyn
 });
 
 test("memory controller persists summarized fact objects", async () => {
+  const tmpDb = path.join(os.tmpdir(), `vera-mc-${Date.now()}.db`);
+  const prevDb = process.env.VERA_MEMORY_DB_PATH;
+  process.env.VERA_MEMORY_DB_PATH = tmpDb;
+  resetMemoryModules();
+
   const controllerPath = require.resolve("../memory/memoryController.js");
   const deps = [
     require.resolve("../memory/shortTermMemory.js"),
@@ -151,6 +190,14 @@ test("memory controller persists summarized fact objects", async () => {
       if (original) require.cache[dep] = original;
       else delete require.cache[dep];
     }
+    resetMemoryModules();
+    if (prevDb === undefined) delete process.env.VERA_MEMORY_DB_PATH;
+    else process.env.VERA_MEMORY_DB_PATH = prevDb;
+    try {
+      fs.unlinkSync(tmpDb);
+    } catch (_e) {
+      /* ignore */
+    }
   }
 });
 
@@ -162,6 +209,7 @@ test("backup and restore round-trip memory state", async () => {
     fs.writeFileSync(path.join(root, "longterm.json"), JSON.stringify([{ text: "before" }], null, 2));
     fs.writeFileSync(path.join(root, "sessions", "s1.json"), JSON.stringify([{ role: "user", content: "x" }], null, 2));
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/backupManager.js");
     const backupManager = require("../memory/backupManager.js");
@@ -192,6 +240,7 @@ test("backup validation detects checksum tampering", async () => {
     fs.writeFileSync(path.join(root, "longterm.json"), JSON.stringify([{ text: "safe" }], null, 2));
     fs.writeFileSync(path.join(root, "sessions", "s1.json"), JSON.stringify([{ role: "user", content: "hello" }], null, 2));
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/backupManager.js");
     const backupManager = require("../memory/backupManager.js");
@@ -215,6 +264,7 @@ test("backup validation detects stale backup age", async () => {
     fs.writeFileSync(path.join(root, "longterm.json"), JSON.stringify([{ text: "safe" }], null, 2));
     fs.writeFileSync(path.join(root, "sessions", "s1.json"), JSON.stringify([{ role: "user", content: "hello" }], null, 2));
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/backupManager.js");
     const backupManager = require("../memory/backupManager.js");
@@ -242,6 +292,7 @@ test("signed manifest detects signature mismatch", async () => {
     fs.writeFileSync(path.join(root, "longterm.json"), JSON.stringify([{ text: "safe" }], null, 2));
     fs.writeFileSync(path.join(root, "sessions", "s1.json"), JSON.stringify([{ role: "user", content: "hello" }], null, 2));
 
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/backupManager.js");
     const backupManager = require("../memory/backupManager.js");

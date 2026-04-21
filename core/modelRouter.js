@@ -1,83 +1,137 @@
 const path = require("path");
 
-function parseKeywords(value) {
-  return String(value || "")
-    .split(",")
-    .map((s) => s.trim().toLowerCase())
-    .filter(Boolean);
+/**
+ * Multi-route local GGUF routing: explicit route map + optional keyword rules + metadata hints.
+ *
+ * - VERA_MODEL_PATH: default GGUF when routes map omits "default"
+ * - VERA_MODEL_ROUTES: JSON object { "default": "models/a.gguf", "coder": "models/b.gguf", ... }
+ * - VERA_ROUTE_KEYWORDS: JSON { "coder": ["code", "debug"], "legal": ["contract"] } (case-insensitive substring match)
+ * - VERA_ROUTE_DEFAULT: route id when no keyword matches (default "default")
+ */
+
+function resolveRepoRoot() {
+  return path.join(__dirname, "..");
 }
 
-function detectSpecialistContext(text, metadata = {}) {
-  const input = `${text || ""} ${metadata.fileSummary || ""}`.toLowerCase();
-  const codingHints = ["code", "debug", "stack trace", "typescript", "javascript", "python", "refactor"];
-  const legalHints = ["contract", "nda", "liability", "clause", "compliance", "legal"];
-  const fileHints = ["pdf", "docx", "image", "attachment", "file"];
+function parseJsonEnv(raw, label) {
+  if (!raw || !String(raw).trim()) return null;
+  try {
+    return JSON.parse(String(raw));
+  } catch (e) {
+    console.warn(`⚠️ ${label} is not valid JSON; ignoring.`, e.message);
+    return null;
+  }
+}
 
-  if (codingHints.some((h) => input.includes(h))) return "coder";
-  if (legalHints.some((h) => input.includes(h))) return "legal";
-  if (fileHints.some((h) => input.includes(h))) return "file";
-  return "default";
+function normalizeModelPath(p) {
+  const s = String(p || "").trim();
+  if (!s) return null;
+  return path.isAbsolute(s) ? s : path.resolve(resolveRepoRoot(), s);
+}
+
+function buildRoutesMap() {
+  const defaultPath = normalizeModelPath(process.env.VERA_MODEL_PATH || path.join(resolveRepoRoot(), "models/JSON-llama3-fp16.Q4_K_M.gguf"));
+  const fromEnv = parseJsonEnv(process.env.VERA_MODEL_ROUTES, "VERA_MODEL_ROUTES");
+
+  const routes = {};
+  if (fromEnv && typeof fromEnv === "object") {
+    for (const [k, v] of Object.entries(fromEnv)) {
+      const np = normalizeModelPath(v);
+      if (np) routes[String(k).trim()] = np;
+    }
+  }
+  if (!routes.default && defaultPath) {
+    routes.default = defaultPath;
+  }
+  return routes;
+}
+
+function buildKeywordRules() {
+  const raw = parseJsonEnv(process.env.VERA_ROUTE_KEYWORDS, "VERA_ROUTE_KEYWORDS");
+  if (!raw || typeof raw !== "object") {
+    return {
+      coder: ["code", "debug", "function", "typescript", "javascript", "python", "rust", "implement", "refactor"],
+      legal: ["contract", "clause", "liable", "indemnif", "terms of service", "compliance"],
+      file: ["read file", "file path", "directory", "folder", "workspace"],
+    };
+  }
+  const out = {};
+  for (const [route, words] of Object.entries(raw)) {
+    if (Array.isArray(words)) {
+      out[String(route)] = words.map((w) => String(w).toLowerCase());
+    }
+  }
+  return out;
+}
+
+function scoreRouteForPrompt(prompt, routes, keywordRules) {
+  const text = String(prompt || "").toLowerCase();
+  let best = null;
+  let bestScore = 0;
+  for (const [routeId, keywords] of Object.entries(keywordRules)) {
+    if (!routes[routeId]) continue;
+    let score = 0;
+    for (const kw of keywords) {
+      if (kw && text.includes(kw)) score += 1;
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      best = routeId;
+    }
+  }
+  if (best && bestScore > 0) return { route: best, reason: "keyword_match", score: bestScore };
+  return null;
 }
 
 function createModelRouter() {
-  const enabled = String(process.env.VERA_ROUTER_ENABLED || "false").toLowerCase() === "true";
-  const defaultModelPath = process.env.VERA_MODEL_PATH || path.join(__dirname, "../models/JSON-llama3-fp16.Q4_K_M.gguf");
+  const routes = buildRoutesMap();
+  const keywordRules = buildKeywordRules();
+  const defaultRouteId = String(process.env.VERA_ROUTE_DEFAULT || "default").trim() || "default";
 
-  const specialists = {
-    coder: {
-      enabled: Boolean(process.env.VERA_ROUTER_CODER_MODEL),
-      modelPath: process.env.VERA_ROUTER_CODER_MODEL || defaultModelPath,
-      keywords: parseKeywords(process.env.VERA_ROUTER_CODER_KEYWORDS),
-      description: "Coding-heavy prompts and debugging tasks",
-    },
-    legal: {
-      enabled: Boolean(process.env.VERA_ROUTER_LEGAL_MODEL),
-      modelPath: process.env.VERA_ROUTER_LEGAL_MODEL || defaultModelPath,
-      keywords: parseKeywords(process.env.VERA_ROUTER_LEGAL_KEYWORDS),
-      description: "Policy/legal/document interpretation tasks",
-    },
-    file: {
-      enabled: Boolean(process.env.VERA_ROUTER_FILE_MODEL),
-      modelPath: process.env.VERA_ROUTER_FILE_MODEL || defaultModelPath,
-      keywords: parseKeywords(process.env.VERA_ROUTER_FILE_KEYWORDS),
-      description: "File-analysis prompts and extraction follow-ups",
-    },
-  };
+  function resolveRoute({ prompt = "", metadata = {} } = {}) {
+    const preferred =
+      metadata.preferredRoute ||
+      metadata.routeHint ||
+      (metadata.headers && metadata.headers["x-model-route"]) ||
+      "";
 
-  function resolveRoute({ prompt, metadata = {} }) {
-    const selected = detectSpecialistContext(prompt, metadata);
-    if (!enabled) {
+    const prefId = String(preferred || "").trim().toLowerCase();
+    if (prefId && routes[prefId]) {
       return {
-        route: "default",
-        reason: "router_disabled",
-        modelPath: defaultModelPath,
+        route: prefId,
+        modelPath: routes[prefId],
+        reason: "preferred_route",
+        description: "Client or metadata selected route",
       };
     }
-    const specialist = specialists[selected];
-    if (!specialist || !specialist.enabled) {
+
+    const keywordHit = scoreRouteForPrompt(prompt, routes, keywordRules);
+    if (keywordHit && routes[keywordHit.route]) {
       return {
-        route: "default",
-        reason: specialist ? "specialist_unconfigured" : "no_match",
-        modelPath: defaultModelPath,
+        route: keywordHit.route,
+        modelPath: routes[keywordHit.route],
+        reason: keywordHit.reason,
+        description: `Keyword score ${keywordHit.score}`,
       };
     }
+
+    const fallback = routes[defaultRouteId] ? defaultRouteId : Object.keys(routes)[0] || "default";
+    const modelPath = routes[fallback] || routes.default;
     return {
-      route: selected,
-      reason: "heuristic_match",
-      modelPath: specialist.modelPath,
-      description: specialist.description,
+      route: fallback,
+      modelPath,
+      reason: routes[fallback] ? "default_route" : "single_model",
+      description: "No stronger match; using default route",
     };
   }
 
   function getStatus() {
+    const ids = Object.keys(routes);
     return {
-      enabled,
-      defaultModelPath,
-      specialists: {
-        coder: { enabled: specialists.coder.enabled, modelPath: specialists.coder.modelPath },
-        legal: { enabled: specialists.legal.enabled, modelPath: specialists.legal.modelPath },
-        file: { enabled: specialists.file.enabled, modelPath: specialists.file.modelPath },
-      },
+      mode: ids.length > 1 ? "multi" : "single",
+      defaultRoute: defaultRouteId,
+      routes: Object.fromEntries(ids.map((id) => [id, routes[id]])),
+      keywordRoutes: Object.keys(keywordRules),
     };
   }
 

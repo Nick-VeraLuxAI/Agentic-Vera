@@ -1,34 +1,50 @@
-const fs = require("fs");
-const path = require("path");
-const { embedText } = require("../memory/retrievalMemory");
+const { getDb } = require("../memory/db");
+const { embedText } = require("../memory/embeddings");
+const { embedChunkForIndexAsync, getEmbeddingFingerprint } = require("../memory/embeddingProvider");
 
-const indexFile = process.env.VERA_RETRIEVAL_INDEX_FILE || path.join(__dirname, "..", "memory", "retrieval_index.json");
-
-function run() {
-  if (!fs.existsSync(indexFile)) {
-    console.log(`No retrieval index found at ${indexFile}`);
-    return;
-  }
-  const data = JSON.parse(fs.readFileSync(indexFile, "utf8"));
-  if (!data || typeof data !== "object" || !Array.isArray(data.documents)) {
-    throw new Error("Invalid retrieval index format.");
-  }
+async function run() {
+  const db = getDb();
+  const useHttp = String(process.env.VERA_EMBEDDING_HTTP_URL || "").trim();
+  const fpTarget = getEmbeddingFingerprint();
+  const fpHashFallback = `hash:${Number(process.env.VERA_RETRIEVAL_EMBED_DIM || 128)}`;
+  const rows = db.prepare(`SELECT id, text, embedding, embedding_fp FROM chunks`).all();
+  const update = db.prepare(`UPDATE chunks SET embedding = ?, embedding_fp = ? WHERE id = ?`);
 
   let updated = 0;
-  for (const doc of data.documents) {
-    if (!Array.isArray(doc.embedding) || doc.embedding.length === 0) {
-      doc.embedding = embedText(doc.text);
-      updated += 1;
+  for (const row of rows) {
+    let needs = true;
+    if (row.embedding && row.embedding_fp === fpTarget) {
+      try {
+        const parsed = JSON.parse(row.embedding);
+        if (Array.isArray(parsed) && parsed.length) needs = false;
+      } catch (_e) {
+        needs = true;
+      }
     }
+    if (!needs) continue;
+
+    let emb = null;
+    let fpRow = fpTarget;
+    try {
+      emb = useHttp ? await embedChunkForIndexAsync(row.text) : embedText(row.text);
+    } catch (err) {
+      console.warn(`Chunk ${row.id}: HTTP embed failed (${err.message}), using hash.`);
+      emb = embedText(row.text);
+      fpRow = fpHashFallback;
+    }
+    if (!emb) continue;
+    update.run(JSON.stringify(emb), fpRow, row.id);
+    updated += 1;
   }
 
-  fs.writeFileSync(indexFile, JSON.stringify(data, null, 2), "utf8");
-  console.log(`Backfill complete. Updated ${updated} document(s) in ${indexFile}`);
+  console.log(`Embedding backfill complete. Updated ${updated} chunk(s). Fingerprint target: ${fpTarget}`);
 }
 
-try {
-  run();
-} catch (err) {
-  console.error("Embedding backfill failed:", err.message);
-  process.exit(1);
-}
+(async () => {
+  try {
+    await run();
+  } catch (err) {
+    console.error("Embedding backfill failed:", err.message);
+    process.exit(1);
+  }
+})();

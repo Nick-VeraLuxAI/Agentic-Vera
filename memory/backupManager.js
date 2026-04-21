@@ -12,6 +12,10 @@ const MAX_BACKUP_AGE_MS = Number(process.env.VERA_MAX_BACKUP_AGE_MS || 0);
 const MANIFEST_HMAC_KEY = process.env.VERA_BACKUP_MANIFEST_HMAC_KEY || "";
 const MANIFEST_FILE = "manifest.json";
 
+function getMemoryDbFile() {
+  return process.env.VERA_MEMORY_DB_PATH || path.join(MEMORY_DIR, "vera_memory.db");
+}
+
 function ensurePaths() {
   ensureDirSync(BACKUPS_DIR);
   ensureDirSync(SESSIONS_DIR);
@@ -107,6 +111,16 @@ async function createBackup() {
     fs.mkdirSync(target, { recursive: true });
     fs.copyFileSync(LONGTERM_FILE, path.join(target, "longterm.json"));
     copyDirRecursive(SESSIONS_DIR, path.join(target, "sessions"));
+    const dbFile = getMemoryDbFile();
+    if (fs.existsSync(dbFile)) {
+      fs.copyFileSync(dbFile, path.join(target, "vera_memory.db"));
+    }
+    try {
+      const { writeExportFile } = require("./exportSnapshot");
+      writeExportFile(path.join(target, "memory_export.json"));
+    } catch (err) {
+      console.warn("⚠️ Optional memory_export.json skipped:", err.message);
+    }
     const manifest = buildManifest(target);
     if (MANIFEST_HMAC_KEY) {
       manifest.signatureAlg = "hmac-sha256";
@@ -138,7 +152,15 @@ async function restoreBackup(backupName, options = {}) {
       err.details = validation;
       throw err;
     }
-    fs.copyFileSync(path.join(source, "longterm.json"), LONGTERM_FILE);
+    const dbSnapshot = path.join(source, "vera_memory.db");
+    if (fs.existsSync(dbSnapshot)) {
+      const dest = getMemoryDbFile();
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.copyFileSync(dbSnapshot, dest);
+    }
+    if (fs.existsSync(path.join(source, "longterm.json"))) {
+      fs.copyFileSync(path.join(source, "longterm.json"), LONGTERM_FILE);
+    }
     fs.rmSync(SESSIONS_DIR, { recursive: true, force: true });
     copyDirRecursive(path.join(source, "sessions"), SESSIONS_DIR);
     return true;

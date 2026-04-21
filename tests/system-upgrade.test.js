@@ -43,8 +43,59 @@ test("admin and memory routes require API key when configured", async () => {
     .set("Authorization", "Bearer test-key");
   assert.equal(adminAllowed.status, 200);
 
+  const agentDenied = await request(app).get("/api/agent/session/goal").set("x-session-id", "sess_auth");
+  assert.equal(agentDenied.status, 401);
+
+  const agentAllowed = await request(app)
+    .get("/api/agent/session/goal")
+    .set("x-session-id", "sess_auth")
+    .set("x-api-key", "test-key");
+  assert.equal(agentAllowed.status, 200);
+
   if (previous === undefined) delete process.env.VERA_ADMIN_API_KEY;
   else process.env.VERA_ADMIN_API_KEY = previous;
+});
+
+test("agent_run task enqueue requires API key when configured", async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "vera-agent-run-auth-"));
+  const previousQueue = process.env.VERA_TASK_QUEUE_FILE;
+  const previousKey = process.env.VERA_ADMIN_API_KEY;
+  process.env.VERA_TASK_QUEUE_FILE = path.join(root, "tasks.json");
+  process.env.VERA_ADMIN_API_KEY = "run-key";
+
+  try {
+    clear("../memory/storage.js");
+    clear("../orchestration/taskQueue.js");
+    clear("../server.js");
+    const { createApp } = require("../server.js");
+    const app = createApp({
+      brain: {
+        send: async () => "ok",
+        sendStream: async () => {},
+        getModelRoute: () => ({ route: "default" }),
+      },
+      memoryApi: {
+        getFacts: () => [],
+        deleteFact: async () => true,
+      },
+      disableLocalOnly: true,
+    });
+
+    const denied = await request(app).post("/api/tasks").send({ type: "agent_run", payload: { goal: "test goal" } });
+    assert.equal(denied.status, 401);
+
+    const ok = await request(app)
+      .post("/api/tasks")
+      .set("x-api-key", "run-key")
+      .send({ type: "agent_run", payload: { goal: "test goal" } });
+    assert.equal(ok.status, 202);
+    assert.ok(ok.body.taskId);
+  } finally {
+    if (previousQueue === undefined) delete process.env.VERA_TASK_QUEUE_FILE;
+    else process.env.VERA_TASK_QUEUE_FILE = previousQueue;
+    if (previousKey === undefined) delete process.env.VERA_ADMIN_API_KEY;
+    else process.env.VERA_ADMIN_API_KEY = previousKey;
+  }
 });
 
 test("task queue can claim queued task for worker", async () => {

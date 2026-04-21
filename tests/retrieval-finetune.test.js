@@ -9,12 +9,39 @@ function clearModule(modulePath) {
   delete require.cache[resolved];
 }
 
+function resetMemoryModules() {
+  try {
+    const resolved = require.resolve("../memory/db.js");
+    if (require.cache[resolved]) {
+      require("../memory/db.js").closeDbForTests();
+    }
+  } catch (_e) {
+    /* ignore */
+  }
+  for (const m of [
+    "../memory/db.js",
+    "../memory/memoryStore.js",
+    "../memory/searchMemory.js",
+    "../memory/retrievalMemory.js",
+    "../memory/legacyImport.js",
+  ]) {
+    try {
+      delete require.cache[require.resolve(m)];
+    } catch (_e) {
+      /* ignore */
+    }
+  }
+}
+
 test("retrieval memory indexes and returns relevant context", async () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "vera-retrieval-"));
-  const previous = process.env.VERA_RETRIEVAL_INDEX_FILE;
+  const previousIndex = process.env.VERA_RETRIEVAL_INDEX_FILE;
+  const previousDb = process.env.VERA_MEMORY_DB_PATH;
   process.env.VERA_RETRIEVAL_INDEX_FILE = path.join(root, "retrieval_index.json");
+  process.env.VERA_MEMORY_DB_PATH = path.join(root, "vera_memory.db");
 
   try {
+    resetMemoryModules();
     clearModule("../memory/storage.js");
     clearModule("../memory/retrievalMemory.js");
     const retrieval = require("../memory/retrievalMemory.js");
@@ -29,8 +56,11 @@ test("retrieval memory indexes and returns relevant context", async () => {
     assert.equal(stats.embeddingsEnabled, true);
     assert.ok(stats.documentsWithEmbeddings >= 1);
   } finally {
-    if (previous === undefined) delete process.env.VERA_RETRIEVAL_INDEX_FILE;
-    else process.env.VERA_RETRIEVAL_INDEX_FILE = previous;
+    if (previousIndex === undefined) delete process.env.VERA_RETRIEVAL_INDEX_FILE;
+    else process.env.VERA_RETRIEVAL_INDEX_FILE = previousIndex;
+    if (previousDb === undefined) delete process.env.VERA_MEMORY_DB_PATH;
+    else process.env.VERA_MEMORY_DB_PATH = previousDb;
+    resetMemoryModules();
   }
 });
 

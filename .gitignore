@@ -13,6 +13,11 @@ models/*.gguf
 # Runtime / machine-local state
 memory/backups/
 memory/sessions/
+memory/vera_memory.db
+memory/vera_memory.db-shm
+memory/vera_memory.db-wal
+memory/export_snapshot.json
+memory/sandbox_audit.jsonl
 
 # Training outputs
 training/artifacts/

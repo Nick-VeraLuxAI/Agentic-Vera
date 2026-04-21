@@ -1,9 +1,11 @@
 const taskQueue = require("./taskQueue");
 const brain = require("../core/verabrain");
 const { runTool } = require("../tools/runner");
+const { runAgentRunTask } = require("../core/agentRunner");
 
 const POLL_MS = Number(process.env.VERA_WORKER_POLL_MS || 2000);
 const WORKER_ID = process.env.VERA_WORKER_ID || `worker_${process.pid}`;
+const MAX_TASK_ATTEMPTS = Math.max(1, Number(process.env.VERA_TASK_MAX_ATTEMPTS || 3));
 
 async function runTask(task) {
   switch (task.type) {
@@ -23,8 +25,12 @@ async function runTask(task) {
     case "tool": {
       const toolName = String(task.payload?.name || task.payload?.tool || "").trim();
       if (!toolName) throw new Error("Missing tool name in tool payload.");
-      const result = await runTool(toolName, task.payload?.args || {});
+      const result = await runTool(toolName, task.payload?.args || {}, {});
       return { ok: true, result };
+    }
+    case "agent_run":
+    case "agent_run_resume": {
+      return runAgentRunTask(task);
     }
     default:
       return {
@@ -49,16 +55,39 @@ async function processNextTask() {
     });
     await taskQueue.addCheckpoint(task.id, { event: "task_completed", workerId: WORKER_ID });
   } catch (err) {
-    await taskQueue.updateTask(task.id, {
-      status: "failed",
-      error: err.message,
-      completedAt: Date.now(),
-    });
+    const msg = err && err.message ? err.message : String(err);
+    const prev = Number(task.attempts || 0);
+    const attempts = prev + 1;
     await taskQueue.addCheckpoint(task.id, {
       event: "task_failed",
       workerId: WORKER_ID,
-      error: err.message,
+      error: msg,
+      attempt: attempts,
     });
+    if (attempts < MAX_TASK_ATTEMPTS) {
+      await taskQueue.updateTask(task.id, {
+        status: "queued",
+        attempts,
+        lastError: msg,
+        workerId: null,
+        progress: 0,
+        updatedAt: Date.now(),
+      });
+    } else {
+      await taskQueue.updateTask(task.id, {
+        status: "dead_letter",
+        attempts,
+        error: msg,
+        lastError: msg,
+        completedAt: Date.now(),
+      });
+      await taskQueue.addCheckpoint(task.id, {
+        event: "task_dead_letter",
+        workerId: WORKER_ID,
+        error: msg,
+        attempts,
+      });
+    }
   }
   return true;
 }

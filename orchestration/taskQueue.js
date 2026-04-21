@@ -8,7 +8,7 @@ const TASK_QUEUE_FILE = process.env.VERA_TASK_QUEUE_FILE || path.join(__dirname,
 function ensureQueueFile() {
   ensureDirSync(path.dirname(TASK_QUEUE_FILE));
   if (!fs.existsSync(TASK_QUEUE_FILE)) {
-    atomicWriteJsonSync(TASK_QUEUE_FILE, { tasks: [] });
+    atomicWriteJsonSync(TASK_QUEUE_FILE, { tasks: [], idempotencyIndex: {} });
   }
 }
 
@@ -16,7 +16,10 @@ function loadState() {
   ensureQueueFile();
   const state = readJsonSafeSync(TASK_QUEUE_FILE, { tasks: [] });
   if (!state || typeof state !== "object" || !Array.isArray(state.tasks)) {
-    return { tasks: [] };
+    return { tasks: [], idempotencyIndex: {} };
+  }
+  if (!state.idempotencyIndex || typeof state.idempotencyIndex !== "object") {
+    state.idempotencyIndex = {};
   }
   return state;
 }
@@ -25,9 +28,23 @@ function saveState(state) {
   atomicWriteJsonSync(TASK_QUEUE_FILE, state);
 }
 
-async function enqueueTask(type, payload = {}) {
+function hashIdempotencyKey(key) {
+  return crypto.createHash("sha256").update(String(key)).digest("hex");
+}
+
+async function enqueueTask(type, payload = {}, options = {}) {
   return withMemoryLock(async () => {
     const state = loadState();
+    const rawKey = options.idempotencyKey != null ? String(options.idempotencyKey).trim() : "";
+    if (rawKey) {
+      const h = hashIdempotencyKey(rawKey);
+      const existingId = state.idempotencyIndex[h];
+      if (existingId) {
+        const existing = state.tasks.find((t) => t.id === existingId);
+        if (existing) return existingId;
+      }
+    }
+
     const now = Date.now();
     const id = crypto.randomUUID();
     state.tasks.push({
@@ -39,7 +56,11 @@ async function enqueueTask(type, payload = {}) {
       createdAt: now,
       updatedAt: now,
       checkpoints: [],
+      attempts: 0,
     });
+    if (rawKey) {
+      state.idempotencyIndex[hashIdempotencyKey(rawKey)] = id;
+    }
     saveState(state);
     return id;
   });
@@ -100,9 +121,17 @@ function getTask(id) {
   return state.tasks.find((t) => t.id === id) || null;
 }
 
-function listTasks(limit = 50) {
+function listTasks(limit = 50, filter = {}) {
   const state = loadState();
-  return state.tasks.slice().sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+  let tasks = state.tasks.slice();
+  if (filter.status) {
+    tasks = tasks.filter((t) => t.status === filter.status);
+  }
+  return tasks.sort((a, b) => b.createdAt - a.createdAt).slice(0, limit);
+}
+
+function listDeadLetterTasks(limit = 50) {
+  return listTasks(limit, { status: "dead_letter" });
 }
 
 module.exports = {
@@ -112,4 +141,6 @@ module.exports = {
   claimNextQueuedTask,
   getTask,
   listTasks,
+  listDeadLetterTasks,
+  hashIdempotencyKey,
 };

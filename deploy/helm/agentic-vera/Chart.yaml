@@ -1,0 +1,6 @@
+apiVersion: v2
+name: agentic-vera
+description: Local-first agent stack (Vera)
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

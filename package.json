@@ -2,15 +2,16 @@
   "name": "agentic-vera",
   "version": "0.1.0",
   "private": true,
-  "description": "Local-first agentic assistant: tool loops, retrieval memory, task worker, sandboxed code, route-aware models.",
+  "description": "Local-first agentic assistant: tool loops, retrieval memory, task worker, sandboxed code, single local model.",
   "repository": {
     "type": "git",
     "url": "https://github.com/Nick-VeraLuxAI/Agentic-Vera.git"
   },
   "scripts": {
     "start": "node server.js",
-    "lint": "node --check server.js core/*.js memory/*.js orchestration/*.js tools/*.js ui/script.js tests/*.test.js scripts/*.js",
+    "lint": "node --check server.js core/*.js lib/*.js memory/*.js orchestration/*.js tools/*.js ui/script.js tests/*.test.js scripts/*.js",
     "test": "node --test tests/*.test.js",
+    "test:ci": "node scripts/check-tool-config-sync.js && node --test tests/*.test.js",
     "smoke:ci": "node --test scripts/smoke-ci.js",
     "backup:memory": "node scripts/backup-memory.js",
     "restore:memory": "node scripts/restore-memory.js",
@@ -18,11 +19,20 @@
     "prepare:finetune-dataset": "node scripts/prepare-finetune-dataset.js",
     "train:finetune": "node scripts/run-finetune.js",
     "evals:run": "node scripts/run-evals.js",
+    "tools:sync-config": "node scripts/sync-tool-config.js",
+    "tools:check-sync": "node scripts/check-tool-config-sync.js",
     "worker:start": "node scripts/run-worker.js",
     "retrieval:backfill-embeddings": "node scripts/backfill-retrieval-embeddings.js",
-    "sandbox:prepare-images": "node scripts/prepare-sandbox-images.js"
+    "memory:export": "node scripts/export-memory.js",
+    "memory:retention": "node scripts/run-memory-retention.js",
+    "sandbox:prepare-images": "node scripts/prepare-sandbox-images.js",
+    "cli": "node scripts/vera-cli.js",
+    "keys:add": "node scripts/add-api-key.js"
   },
   "dependencies": {
+    "ajv": "^8.18.0",
+    "ajv-formats": "^3.0.1",
+    "better-sqlite3": "^11.10.0",
     "body-parser": "^2.2.2",
     "dompurify": "^3.3.1",
     "express": "^5.1.0",

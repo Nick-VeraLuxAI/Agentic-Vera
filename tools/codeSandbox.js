@@ -2,6 +2,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
+const { logSandboxExecution } = require("./sandboxAudit");
 
 const SANDBOX_ENABLED = String(process.env.VERA_SANDBOX_ENABLED || "false").toLowerCase() === "true";
 const DEFAULT_TIMEOUT_MS = Number(process.env.VERA_SANDBOX_TIMEOUT_MS || 8000);
@@ -147,13 +148,28 @@ function buildDockerArgs(profile, runtime) {
 }
 
 async function runInSandbox(options = {}) {
+  const codeLen = String(options.code || "").trim().length;
+  const langHint = String(options.language || "python").toLowerCase();
+
   if (!SANDBOX_ENABLED) {
+    logSandboxExecution({
+      ok: false,
+      reason: "disabled",
+      language: langHint,
+      codeLength: codeLen,
+    });
     return {
       ok: false,
       error: "Sandbox is disabled. Set VERA_SANDBOX_ENABLED=true to allow code execution.",
     };
   }
   if (!checkDockerAvailable()) {
+    logSandboxExecution({
+      ok: false,
+      reason: "no_docker",
+      language: langHint,
+      codeLength: codeLen,
+    });
     return {
       ok: false,
       error: "Docker is not available on this host.",
@@ -162,10 +178,28 @@ async function runInSandbox(options = {}) {
 
   const code = String(options.code || "").trim();
   if (!code) {
+    logSandboxExecution({
+      ok: false,
+      reason: "empty_code",
+      language: langHint,
+      codeLength: 0,
+    });
     return { ok: false, error: "Sandbox requires non-empty code." };
   }
 
-  const profile = languageProfile(options.language || "python");
+  let profile;
+  try {
+    profile = languageProfile(options.language || "python");
+  } catch (err) {
+    logSandboxExecution({
+      ok: false,
+      reason: "bad_language",
+      language: langHint,
+      codeLength: code.length,
+      errorMessage: err.message,
+    });
+    throw err;
+  }
   const timeoutMs = Math.max(500, Number(options.timeoutMs || DEFAULT_TIMEOUT_MS));
   const memoryMb = Math.max(128, Number(options.memoryMb || DEFAULT_MEMORY_MB));
   const cpuLimit = String(options.cpuLimit || DEFAULT_CPU_LIMIT);
@@ -213,6 +247,15 @@ async function runInSandbox(options = {}) {
         // ignore cleanup errors
       }
       if (timedOut) {
+        logSandboxExecution({
+          ok: false,
+          reason: "timeout",
+          language: profile.language,
+          exitCode: codeValue,
+          timedOut: true,
+          codeLength: code.length,
+          timeoutMs,
+        });
         return resolve({
           ok: false,
           error: `Sandbox timed out after ${timeoutMs}ms`,
@@ -221,6 +264,15 @@ async function runInSandbox(options = {}) {
           timeoutMs,
         });
       }
+      logSandboxExecution({
+        ok: codeValue === 0,
+        language: profile.language,
+        exitCode: codeValue,
+        timedOut: false,
+        codeLength: code.length,
+        timeoutMs,
+        hardened,
+      });
       return resolve({
         ok: codeValue === 0,
         exitCode: codeValue,
@@ -238,6 +290,13 @@ async function runInSandbox(options = {}) {
       } catch (_err) {
         // ignore cleanup errors
       }
+      logSandboxExecution({
+        ok: false,
+        reason: "spawn_error",
+        language: profile.language,
+        codeLength: code.length,
+        errorMessage: err.message,
+      });
       resolve({
         ok: false,
         error: `Failed to start sandbox process: ${err.message}`,

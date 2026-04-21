@@ -1,10 +1,13 @@
 {
-  "email_tool": "Sends emails using local SMTP settings",
-  "file_utils": "Handles file operations like rename, delete, etc.",
-  "image_tool": "Generates or processes images using local AI",
-  "local_infer": "Runs local language model inference",
-  "code_sandbox": "Executes untrusted code in a Docker sandbox with strict limits",
-  "pdf_tool": "Extracts and summarizes PDF contents",
-  "search_tool": "Searches documents or knowledge base",
-  "summary_tool": "Creates summaries of text or documents"
+  "search_tool": "Search the user's indexed memories and uploaded documents (lexical + embedding similarity).",
+  "summary_tool": "Truncate/summarize a long text to a short excerpt for the context window.",
+  "local_infer": "Run a follow-up prompt on the local model (use sparingly; expensive). Uses the active route's GGUF when invoked from the main assistant.",
+  "code_sandbox": "Execute untrusted code in an isolated Docker sandbox (only when explicitly needed).",
+  "workspace_read": "Read a UTF-8 text file under VERA_WORKSPACE_ROOT (path traversal blocked).",
+  "workspace_list": "List files and subdirectories under a path within VERA_WORKSPACE_ROOT.",
+  "workspace_write": "Write UTF-8 text to a path under VERA_WORKSPACE_ROOT (may require human approval + approvalId).",
+  "http_fetch": "HTTP GET for allowlisted hosts only (disabled unless VERA_HTTP_FETCH_ENABLED=true).",
+  "eval_arithmetic": "Evaluate a numeric arithmetic expression with + - * / and parentheses (no variables).",
+  "system_info": "Read-only process/workspace metadata (Node version, platform, workspace root).",
+  "coordination_post": "Post a message to the multi-agent coordination bus (same coordinationId as the active agent run). Visible to other runs/steps sharing that session."
 }
