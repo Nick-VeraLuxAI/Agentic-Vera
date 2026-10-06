@@ -9,6 +9,22 @@ const { embedQueryVectorAsync } = require("./embeddingProvider");
 
 const USE_EMBEDDINGS = String(process.env.VERA_RETRIEVAL_USE_EMBEDDINGS || "true").toLowerCase() === "true";
 
+function mapChunkHit(item) {
+  const doc = item.doc;
+  const text = doc.text;
+  const end = Math.max(0, text.length - 1);
+  return {
+    score: Number(item.score.toFixed(4)),
+    source: doc.source,
+    sessionId: doc.session_id,
+    text,
+    chunkId: doc.id,
+    charStart: 0,
+    charEnd: end,
+    embeddingFingerprint: doc.embedding_fp || null,
+  };
+}
+
 function scoreBeliefAgainstQuery(queryTokens, factObj) {
   const hay = [
     factObj.subject,
@@ -73,7 +89,7 @@ function searchChunks(query, options = {}) {
   if (!queryTokens.length) return [];
 
   const db = getDb();
-  let sql = `SELECT id, session_id, source, text, metadata, embedding, created_at FROM chunks`;
+  let sql = `SELECT id, session_id, source, text, metadata, embedding, embedding_fp, created_at FROM chunks`;
   const params = [];
   if (sessionId) {
     sql += ` WHERE session_id = ?`;
@@ -132,12 +148,7 @@ function searchChunks(query, options = {}) {
     usedChars += len;
   }
 
-  return selected.map((item) => ({
-    score: Number(item.score.toFixed(4)),
-    source: item.doc.source,
-    sessionId: item.doc.session_id,
-    text: item.doc.text,
-  }));
+  return selected.map((item) => mapChunkHit(item));
 }
 
 async function searchChunksAsync(query, options = {}) {
@@ -151,7 +162,7 @@ async function searchChunksAsync(query, options = {}) {
   if (!queryTokens.length) return [];
 
   const db = getDb();
-  let sql = `SELECT id, session_id, source, text, metadata, embedding, created_at FROM chunks`;
+  let sql = `SELECT id, session_id, source, text, metadata, embedding, embedding_fp, created_at FROM chunks`;
   const params = [];
   if (sessionId) {
     sql += ` WHERE session_id = ?`;
@@ -224,12 +235,7 @@ async function searchChunksAsync(query, options = {}) {
     usedChars += len;
   }
 
-  return selected.map((item) => ({
-    score: Number(item.score.toFixed(4)),
-    source: item.doc.source,
-    sessionId: item.doc.session_id,
-    text: item.doc.text,
-  }));
+  return selected.map((item) => mapChunkHit(item));
 }
 
 function recentEpisodes(sessionId, limit = 5) {

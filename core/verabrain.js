@@ -42,6 +42,7 @@ function normalizeRoute(route = {}) {
     reason: route.reason || "unspecified",
     modelPath,
     description: route.description,
+    confidence: typeof route.confidence === "number" ? route.confidence : undefined,
   };
 }
 
@@ -137,7 +138,13 @@ function buildPrompt(userInput, options = {}) {
     ? `Recent conversation:\n${previousHistory.map((m) => `${m.role}: ${m.content}`).join("\n")}\n\n`
     : "";
   const contextBlock = retrievedContexts.length
-    ? `Relevant prior context:\n${retrievedContexts.map((c, idx) => `(${idx + 1}) [${c.source}] ${c.text}`).join("\n\n")}\n\n`
+    ? `Relevant prior context (cite sources as [n] in your answer when used):\n${retrievedContexts
+        .map((c, idx) => {
+          const n = idx + 1;
+          const cite = c.chunkId ? `[${n}] id=${c.chunkId}` : `[${n}]`;
+          return `(${n}) ${cite} [${c.source}] ${c.text}`;
+        })
+        .join("\n\n")}\n\n`
     : "";
   const factsBlock = relevantFacts.length
     ? `Potentially relevant known facts:\n${relevantFacts
@@ -383,6 +390,7 @@ function resolveRouteForRequest(prompt, options = {}) {
     modelPath: resolved.modelPath,
     reason: resolved.reason,
     description: resolved.description,
+    confidence: resolved.confidence,
   });
 }
 

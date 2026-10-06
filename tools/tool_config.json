@@ -9,5 +9,7 @@
   "http_fetch": "HTTP GET for allowlisted hosts only (disabled unless VERA_HTTP_FETCH_ENABLED=true).",
   "eval_arithmetic": "Evaluate a numeric arithmetic expression with + - * / and parentheses (no variables).",
   "system_info": "Read-only process/workspace metadata (Node version, platform, workspace root).",
-  "coordination_post": "Post a message to the multi-agent coordination bus (same coordinationId as the active agent run). Visible to other runs/steps sharing that session."
+  "coordination_post": "Post a message to the multi-agent coordination bus (same coordinationId as the active agent run). Visible to other runs/steps sharing that session.",
+  "github_api": "GitHub REST API GET helper (requires VERA_GITHUB_TOKEN). Optional VERA_GITHUB_API_ALLOWLIST=comma-separated path prefixes.",
+  "slack_post": "Post a short message via Slack Incoming Webhook (requires VERA_SLACK_INCOMING_WEBHOOK_URL). Not interactive OAuth."
 }

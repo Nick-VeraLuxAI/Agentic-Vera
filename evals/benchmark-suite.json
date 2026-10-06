@@ -1,0 +1,387 @@
+[
+  {
+    "id": "refactor-ts-1",
+    "group": "router_coder",
+    "prompt": "Refactor this TypeScript function for readability and add tests.",
+    "expects": [
+      "refactor",
+      "this",
+      "typescript"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "py-debug-1",
+    "group": "router_legal",
+    "prompt": "Debug this Python exception and suggest a minimal fix.",
+    "expects": [
+      "debug",
+      "this",
+      "python"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "rust-unsafe",
+    "group": "router_file",
+    "prompt": "Explain this Rust unsafe block and whether it is sound.",
+    "expects": [
+      "explain",
+      "this",
+      "rust"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "legal-tos",
+    "group": "router_default",
+    "prompt": "Review this Terms of Service clause for unfair indemnification language.",
+    "expects": [
+      "review",
+      "this",
+      "terms"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "compliance-gdpr",
+    "group": "prompt_quality",
+    "prompt": "What GDPR considerations apply to storing user emails?",
+    "expects": [
+      "what",
+      "gdpr",
+      "considerations"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "workspace-list",
+    "group": "retrieval_optional",
+    "prompt": "List files in my project workspace and summarize structure.",
+    "expects": [
+      "list",
+      "files",
+      "in"
+    ],
+    "routeHint": "file"
+  },
+  {
+    "id": "path-read",
+    "group": "router_coder",
+    "prompt": "Read the file at src/config.json and summarize keys.",
+    "expects": [
+      "read",
+      "the",
+      "file"
+    ],
+    "routeHint": "file"
+  },
+  {
+    "id": "smalltalk",
+    "group": "router_legal",
+    "prompt": "Hello, how are you today?",
+    "expects": [
+      "hello,",
+      "how",
+      "are"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "recipe",
+    "group": "router_file",
+    "prompt": "What is a good recipe for lentil soup?",
+    "expects": [
+      "what",
+      "is",
+      "a"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "contract-review",
+    "group": "router_default",
+    "prompt": "This contract clause limits liability — is that enforceable?",
+    "expects": [
+      "this",
+      "contract",
+      "clause"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "js-async",
+    "group": "prompt_quality",
+    "prompt": "Why does this async JavaScript loop lose ordering?",
+    "expects": [
+      "why",
+      "does",
+      "this"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "sql-index",
+    "group": "retrieval_optional",
+    "prompt": "Should I add an index for this WHERE clause pattern?",
+    "expects": [
+      "should",
+      "i",
+      "add"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "folder-copy",
+    "group": "router_coder",
+    "prompt": "How do I copy a directory recursively on macOS?",
+    "expects": [
+      "how",
+      "do",
+      "i"
+    ],
+    "routeHint": "file"
+  },
+  {
+    "id": "general-1",
+    "group": "router_legal",
+    "prompt": "Summarize the benefits of exercise in two sentences.",
+    "expects": [
+      "summarize",
+      "the",
+      "benefits"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "general-2",
+    "group": "router_file",
+    "prompt": "What is photosynthesis?",
+    "expects": [
+      "what",
+      "is",
+      "photosynthesis?"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "code-review",
+    "group": "router_default",
+    "prompt": "Review this pull request for security issues in the auth module.",
+    "expects": [
+      "review",
+      "this",
+      "pull"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "license",
+    "group": "prompt_quality",
+    "prompt": "Compare MIT and Apache 2.0 licenses briefly.",
+    "expects": [
+      "compare",
+      "mit",
+      "and"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "git-help",
+    "group": "retrieval_optional",
+    "prompt": "How do I undo the last git commit but keep changes?",
+    "expects": [
+      "how",
+      "do",
+      "i"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "docker-help",
+    "group": "router_coder",
+    "prompt": "How do I prune unused Docker images safely?",
+    "expects": [
+      "how",
+      "do",
+      "i"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "privacy",
+    "group": "router_legal",
+    "prompt": "What is a privacy policy and when is it required?",
+    "expects": [
+      "what",
+      "is",
+      "a"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "excel",
+    "group": "router_file",
+    "prompt": "How do I use VLOOKUP in Excel?",
+    "expects": [
+      "how",
+      "do",
+      "i"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "nginx",
+    "group": "router_default",
+    "prompt": "Give an example nginx reverse proxy config snippet.",
+    "expects": [
+      "give",
+      "an",
+      "example"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "csv-parse",
+    "group": "prompt_quality",
+    "prompt": "Parse a CSV in Python with quoted fields.",
+    "expects": [
+      "parse",
+      "a",
+      "csv"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "doc-summary",
+    "group": "retrieval_optional",
+    "prompt": "Summarize this uploaded document requirements list.",
+    "expects": [
+      "summarize",
+      "this",
+      "uploaded"
+    ],
+    "routeHint": "file"
+  },
+  {
+    "id": "memo",
+    "group": "router_coder",
+    "prompt": "Write a short memo about quarterly goals.",
+    "expects": [
+      "write",
+      "a",
+      "short"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "api-design",
+    "group": "router_legal",
+    "prompt": "What are good practices for REST API pagination?",
+    "expects": [
+      "what",
+      "are",
+      "good"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "encryption",
+    "group": "router_file",
+    "prompt": "Explain AES vs RSA at a high level.",
+    "expects": [
+      "explain",
+      "aes",
+      "vs"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "nda",
+    "group": "router_default",
+    "prompt": "What is typically covered in an NDA?",
+    "expects": [
+      "what",
+      "is",
+      "typically"
+    ],
+    "routeHint": "legal"
+  },
+  {
+    "id": "shell",
+    "group": "prompt_quality",
+    "prompt": "Write a bash script that backs up a directory with tar.",
+    "expects": [
+      "write",
+      "a",
+      "bash"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "yaml",
+    "group": "retrieval_optional",
+    "prompt": "Validate this YAML structure for Kubernetes deployment.",
+    "expects": [
+      "validate",
+      "this",
+      "yaml"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "markdown",
+    "group": "router_coder",
+    "prompt": "Convert this bullet list to markdown headings.",
+    "expects": [
+      "convert",
+      "this",
+      "bullet"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "regex",
+    "group": "router_legal",
+    "prompt": "Write a regex to match IPv4 addresses.",
+    "expects": [
+      "write",
+      "a",
+      "regex"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "timezone",
+    "group": "router_file",
+    "prompt": "How do I convert UTC to local time in JavaScript?",
+    "expects": [
+      "how",
+      "do",
+      "i"
+    ],
+    "routeHint": "coder"
+  },
+  {
+    "id": "hr",
+    "group": "router_default",
+    "prompt": "Draft a neutral response declining a meeting.",
+    "expects": [
+      "draft",
+      "a",
+      "neutral"
+    ],
+    "routeHint": "router_default"
+  },
+  {
+    "id": "finance",
+    "group": "prompt_quality",
+    "prompt": "What is compound interest in one paragraph?",
+    "expects": [
+      "what",
+      "is",
+      "compound"
+    ],
+    "routeHint": "router_default"
+  }
+]

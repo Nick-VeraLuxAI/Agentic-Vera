@@ -2,6 +2,7 @@ const taskQueue = require("./taskQueue");
 const brain = require("../core/verabrain");
 const { runTool } = require("../tools/runner");
 const { runAgentRunTask } = require("../core/agentRunner");
+const { bumpTaskOutcome } = require("../lib/opsMetrics");
 
 const POLL_MS = Number(process.env.VERA_WORKER_POLL_MS || 2000);
 const WORKER_ID = process.env.VERA_WORKER_ID || `worker_${process.pid}`;
@@ -53,6 +54,7 @@ async function processNextTask() {
       result,
       completedAt: Date.now(),
     });
+    bumpTaskOutcome("completed");
     await taskQueue.addCheckpoint(task.id, { event: "task_completed", workerId: WORKER_ID });
   } catch (err) {
     const msg = err && err.message ? err.message : String(err);
@@ -81,6 +83,7 @@ async function processNextTask() {
         lastError: msg,
         completedAt: Date.now(),
       });
+      bumpTaskOutcome("dead_letter");
       await taskQueue.addCheckpoint(task.id, {
         event: "task_dead_letter",
         workerId: WORKER_ID,

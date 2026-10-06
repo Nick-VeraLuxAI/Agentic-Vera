@@ -5,4 +5,5 @@ module.exports = {
   addFact: memoryStore.addFact,
   deleteFact: memoryStore.deleteFact,
   clearFacts: memoryStore.clearFacts,
+  listReviewQueue: memoryStore.listReviewQueue,
 };

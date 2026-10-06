@@ -4,6 +4,7 @@ const { withMemoryLock } = require("./storage");
 const { runMemorySummarizer } = require("./memorySummarizer");
 const { embedText } = require("./embeddings");
 const { embedChunkForIndexAsync, getEmbeddingFingerprint } = require("./embeddingProvider");
+const { markContradictionsForNewBelief } = require("./memoryContradiction");
 
 const MAX_DOCS = Number(process.env.VERA_RETRIEVAL_MAX_DOCS || 5000);
 const CHUNK_SIZE = Number(process.env.VERA_RETRIEVAL_CHUNK_SIZE || 900);
@@ -161,6 +162,11 @@ async function addFact(rawInput) {
     });
 
     supersede();
+    try {
+      markContradictionsForNewBelief(db, summarized, newId, sessionId);
+    } catch (_e) {
+      /* review_flag may be unavailable before migration */
+    }
     console.log("💾 Saved structured fact:", summarized.text);
   });
 }
@@ -307,6 +313,20 @@ function getChunkStats() {
   };
 }
 
+function listReviewQueue(limit = 50) {
+  const db = getDb();
+  const lim = Math.min(200, Math.max(1, Number(limit) || 50));
+  try {
+    return db
+      .prepare(
+        `SELECT id, subject_key, content, confidence, valid_from, review_flag FROM beliefs WHERE valid_to IS NULL AND review_flag != 0 ORDER BY valid_from DESC LIMIT ?`
+      )
+      .all(lim);
+  } catch (_e) {
+    return [];
+  }
+}
+
 module.exports = {
   getFacts: getFactsSync,
   addFact,
@@ -314,6 +334,7 @@ module.exports = {
   clearFacts,
   addDocuments,
   getChunkStats,
+  listReviewQueue,
   normalizeFactObj,
   subjectKeyFromFact,
   parseKeyValueMemoryBlock,

@@ -7,6 +7,7 @@ const { httpFetch } = require("./httpFetch");
 const { REGISTERED_NAMES } = require("./manifest");
 const { validateToolArgs } = require("./toolSchemas");
 const { applyPluginHandlers } = require("./pluginAugment");
+const { bumpTool } = require("../lib/opsMetrics");
 
 const MAX_SUMMARY_CHARS = Number(process.env.VERA_TOOL_SUMMARY_MAX_CHARS || 400);
 const MAX_SYNTHESIS_JSON_CHARS = Number(process.env.VERA_TOOL_SYNTHESIS_MAX_CHARS || 24000);
@@ -146,6 +147,61 @@ const handlers = {
     agentCoordination.appendMessage(coordId, fromRole, toRole, ctx.runId || null, message);
     return { ok: true, posted: true, coordinationId: coordId };
   },
+
+  async github_api(args = {}) {
+    const token = String(process.env.VERA_GITHUB_TOKEN || "").trim();
+    if (!token) {
+      return { ok: false, error: "Set VERA_GITHUB_TOKEN to enable github_api (repo-scoped fine-grained PAT recommended)." };
+    }
+    const apiPath = String(args.path || "").trim();
+    if (!apiPath.startsWith("/")) {
+      return { ok: false, error: 'github_api.path must start with / (e.g. "/repos/owner/repo/issues").' };
+    }
+    const allow = String(process.env.VERA_GITHUB_API_ALLOWLIST || "").trim();
+    if (allow && allow !== "*") {
+      const allowed = allow.split(",").some((prefix) => {
+        const p = prefix.trim();
+        return p && apiPath.startsWith(p);
+      });
+      if (!allowed) {
+        return { ok: false, error: "Path not allowed by VERA_GITHUB_API_ALLOWLIST." };
+      }
+    }
+    const url = new URL(`https://api.github.com${apiPath}`);
+    const res = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "User-Agent": "Agentic-Vera",
+      },
+    });
+    const text = await res.text();
+    let body;
+    try {
+      body = JSON.parse(text);
+    } catch (_e) {
+      body = text;
+    }
+    return { ok: res.ok, status: res.status, body };
+  },
+
+  async slack_post(args = {}) {
+    const wh = String(process.env.VERA_SLACK_INCOMING_WEBHOOK_URL || "").trim();
+    if (!wh) {
+      return { ok: false, error: "Set VERA_SLACK_INCOMING_WEBHOOK_URL to enable slack_post (Incoming Webhook URL)." };
+    }
+    const text = String(args.text || args.message || "").trim();
+    if (!text) {
+      return { ok: false, error: "slack_post requires text or message." };
+    }
+    const res = await fetch(wh, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: text.slice(0, 4000) }),
+    });
+    const t = await res.text();
+    return { ok: res.ok, status: res.status, response: t.slice(0, 500) };
+  },
 };
 
 applyPluginHandlers(handlers);
@@ -165,8 +221,11 @@ async function runTool(name, args = {}, ctx = {}) {
     return { ok: false, error: `Invalid arguments for '${toolName}': ${schemaCheck.error}` };
   }
   try {
-    return await handlers[toolName](args, ctx);
+    const out = await handlers[toolName](args, ctx);
+    bumpTool(Boolean(out && out.ok));
+    return out;
   } catch (err) {
+    bumpTool(false);
     const msg = err && err.message ? err.message : String(err);
     console.error(`❌ Tool '${toolName}' threw:`, msg);
     return { ok: false, error: msg, tool: toolName };

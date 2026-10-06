@@ -38,6 +38,7 @@ const {
   getMemorySchemaVersion,
 } = require("./core/buildInfo");
 const { slog, runWithTrace } = require("./lib/structuredLog");
+const { getSnapshot: getOpsMetrics } = require("./lib/opsMetrics");
 const {
   resolveApiAccess,
   hasScope,
@@ -129,6 +130,7 @@ function createApp(options = {}) {
     metrics.router_last_decision = {
       route: route.route || "unknown",
       reason: route.reason || "unspecified",
+      confidence: typeof route.confidence === "number" ? route.confidence : null,
       timestamp: new Date().toISOString(),
     };
   }
@@ -496,6 +498,16 @@ function createApp(options = {}) {
     res.json(facts);
   });
 
+  app.get("/api/memory/review-queue", (req, res) => {
+    try {
+      const lim = Number(req.query.limit || 50);
+      const rows = typeof memoryApi.listReviewQueue === "function" ? memoryApi.listReviewQueue(lim) : [];
+      return res.json({ items: rows });
+    } catch (err) {
+      return res.status(500).json({ error: err.message || "review queue failed." });
+    }
+  });
+
   app.get("/api/retrieval/status", (req, res) => {
     return res.json(retrievalMemory.getStats());
   });
@@ -576,6 +588,11 @@ function createApp(options = {}) {
     return res.json({ events: auditLog.listSince(since, limit) });
   });
 
+  app.get("/api/admin/audit/verify", (req, res) => {
+    const out = typeof auditLog.verifyChain === "function" ? auditLog.verifyChain() : { ok: false, error: "verify unavailable" };
+    return res.json(out);
+  });
+
   app.get("/health", (req, res) => {
     return res.json({
       status: "ok",
@@ -616,8 +633,16 @@ function createApp(options = {}) {
   });
 
   app.get("/metrics", (req, res) => {
+    let taskQueueSnapshot = null;
+    try {
+      taskQueueSnapshot = taskQueue.countsByStatus();
+    } catch (_e) {
+      taskQueueSnapshot = null;
+    }
     return res.json({
       ...metrics,
+      ...getOpsMetrics(),
+      task_queue: taskQueueSnapshot,
       avg_request_duration_ms:
         metrics.requests_total > 0 ? Math.round(metrics.request_duration_ms_total / metrics.requests_total) : 0,
       runtime: typeof brain.getRuntimeStatus === "function" ? brain.getRuntimeStatus() : null,
@@ -625,6 +650,37 @@ function createApp(options = {}) {
       llamaBinaryPresent: isLlamaBinaryPresent(),
       memorySchemaVersion: getMemorySchemaVersion(),
     });
+  });
+
+  app.get("/metrics/prometheus", (req, res) => {
+    let taskQueueSnapshot = {};
+    try {
+      taskQueueSnapshot = taskQueue.countsByStatus();
+    } catch (_e) {
+      taskQueueSnapshot = {};
+    }
+    const om = getOpsMetrics();
+    const lines = [];
+    const c = (name, help, type, value) => {
+      lines.push(`# HELP ${name} ${help}`);
+      lines.push(`# TYPE ${name} ${type}`);
+      lines.push(`${name} ${Number(value) || 0}`);
+    };
+    c("vera_requests_total", "HTTP requests served", "counter", metrics.requests_total);
+    c("vera_requests_failed_total", "HTTP 4xx/5xx responses", "counter", metrics.requests_failed_total);
+    c("vera_ai_requests_total", "AI /message invocations", "counter", metrics.ai_requests_total);
+    c("vera_ai_requests_failed_total", "Failed AI requests", "counter", metrics.ai_requests_failed_total);
+    c("vera_tool_invocations_total", "Tool handler invocations", "counter", om.tool_invocations_total);
+    c("vera_tool_failures_total", "Tool handler failures", "counter", om.tool_failures_total);
+    c("vera_tasks_completed_total", "Background tasks completed", "counter", om.tasks_completed_total);
+    c("vera_tasks_dead_letter_total", "Background tasks dead-lettered", "counter", om.tasks_dead_letter_total);
+    for (const [k, v] of Object.entries(taskQueueSnapshot)) {
+      lines.push(`# HELP vera_task_queue_tasks Task count by status (${k})`);
+      lines.push(`# TYPE vera_task_queue_tasks gauge`);
+      lines.push(`vera_task_queue_tasks{status="${k}"} ${Number(v) || 0}`);
+    }
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.send(lines.join("\n") + "\n");
   });
 
   app.get("/api/router/status", (req, res) => {

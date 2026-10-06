@@ -344,6 +344,60 @@
         }
       ],
       "attempts": 0
+    },
+    {
+      "id": "b37b9295-090d-4d2d-be77-d27d3ab55003",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776740416827,
+      "updatedAt": 1776740416832,
+      "checkpoints": [
+        {
+          "ts": "2026-04-21T03:00:16.832Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "8da63c7c-9038-441e-a379-98119a1e8939",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776740452034,
+      "updatedAt": 1776740452039,
+      "checkpoints": [
+        {
+          "ts": "2026-04-21T03:00:52.039Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
+    },
+    {
+      "id": "c29fc9ab-e7ca-4c18-8fec-904cc359a6e6",
+      "type": "fine_tune_job",
+      "payload": {
+        "dataset": "training/dataset.jsonl"
+      },
+      "status": "queued",
+      "progress": 0,
+      "createdAt": 1776740604808,
+      "updatedAt": 1776740604811,
+      "checkpoints": [
+        {
+          "ts": "2026-04-21T03:03:24.811Z",
+          "event": "task_created"
+        }
+      ],
+      "attempts": 0
     }
   ],
   "idempotencyIndex": {}

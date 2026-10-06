@@ -107,6 +107,23 @@ const BASE_SCHEMAS = {
       coordinationId: { type: "string" },
     },
   },
+  github_api: {
+    type: "object",
+    additionalProperties: true,
+    required: ["path"],
+    properties: {
+      path: { type: "string", minLength: 1, maxLength: 4096 },
+    },
+  },
+  slack_post: {
+    type: "object",
+    additionalProperties: true,
+    properties: {
+      text: { type: "string", minLength: 1, maxLength: 4000 },
+      message: { type: "string", minLength: 1, maxLength: 4000 },
+    },
+    anyOf: [{ required: ["text"] }, { required: ["message"] }],
+  },
 };
 
 let ajv;

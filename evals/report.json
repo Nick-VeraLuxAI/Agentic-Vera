@@ -1,15 +1,47 @@
 {
-  "generatedAt": "2026-04-20T03:09:46.532Z",
+  "generatedAt": "2026-04-21T03:00:56.009Z",
   "config": {
-    "useModel": false
+    "useModel": false,
+    "caseCount": 38
   },
-  "cases": 3,
-  "averageScore": 0.7519,
+  "cases": 38,
+  "averageScore": 0.9804,
+  "byGroup": {
+    "ungrouped": {
+      "count": 3,
+      "averageScore": 0.7519
+    },
+    "router_coder": {
+      "count": 6,
+      "averageScore": 1
+    },
+    "router_legal": {
+      "count": 6,
+      "averageScore": 1
+    },
+    "router_file": {
+      "count": 6,
+      "averageScore": 1
+    },
+    "router_default": {
+      "count": 6,
+      "averageScore": 1
+    },
+    "prompt_quality": {
+      "count": 6,
+      "averageScore": 1
+    },
+    "retrieval_optional": {
+      "count": 5,
+      "averageScore": 1
+    }
+  },
   "results": [
     {
       "id": "memory-recall-basic",
       "route": "default",
-      "routeReason": "single_model",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
       "expectationScore": 1,
       "responseScore": 0,
       "retrievalScore": 0,
@@ -19,7 +51,8 @@
     {
       "id": "coding-route",
       "route": "default",
-      "routeReason": "single_model",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
       "expectationScore": 1,
       "responseScore": 0,
       "retrievalScore": null,
@@ -29,12 +62,433 @@
     {
       "id": "file-analysis",
       "route": "default",
-      "routeReason": "single_model",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
       "expectationScore": 1,
       "responseScore": 0,
       "retrievalScore": null,
       "routePass": true,
       "score": 0.7778
+    },
+    {
+      "id": "refactor-ts-1",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "py-debug-1",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "rust-unsafe",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "legal-tos",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "compliance-gdpr",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "workspace-list",
+      "group": "retrieval_optional",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "path-read",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "smalltalk",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "recipe",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "contract-review",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "js-async",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "sql-index",
+      "group": "retrieval_optional",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "folder-copy",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "general-1",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "general-2",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "code-review",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "license",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "git-help",
+      "group": "retrieval_optional",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "docker-help",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "privacy",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "excel",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "nginx",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "csv-parse",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "doc-summary",
+      "group": "retrieval_optional",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "memo",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "api-design",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "encryption",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "nda",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "shell",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "yaml",
+      "group": "retrieval_optional",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "markdown",
+      "group": "router_coder",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "regex",
+      "group": "router_legal",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "timezone",
+      "group": "router_file",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "hr",
+      "group": "router_default",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
+    },
+    {
+      "id": "finance",
+      "group": "prompt_quality",
+      "route": "default",
+      "routeReason": "default_route",
+      "routeConfidence": 0.45,
+      "expectationScore": 1,
+      "responseScore": null,
+      "retrievalScore": null,
+      "routePass": true,
+      "score": 1
     }
   ]
 }

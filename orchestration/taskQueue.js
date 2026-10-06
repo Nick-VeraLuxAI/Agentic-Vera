@@ -134,6 +134,16 @@ function listDeadLetterTasks(limit = 50) {
   return listTasks(limit, { status: "dead_letter" });
 }
 
+function countsByStatus() {
+  const state = loadState();
+  const c = { queued: 0, running: 0, completed: 0, dead_letter: 0 };
+  for (const t of state.tasks) {
+    const s = t.status || "unknown";
+    c[s] = (c[s] || 0) + 1;
+  }
+  return c;
+}
+
 module.exports = {
   enqueueTask,
   updateTask,
@@ -142,5 +152,6 @@ module.exports = {
   getTask,
   listTasks,
   listDeadLetterTasks,
+  countsByStatus,
   hashIdempotencyKey,
 };

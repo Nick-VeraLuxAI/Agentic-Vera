@@ -60,6 +60,18 @@ const BASE_TOOL_MANIFEST = [
       "Post a message to the multi-agent coordination bus (same coordinationId as the active agent run). Visible to other runs/steps sharing that session.",
     argsHint: '{ "message": string, "toRole"?: string, "coordinationId"?: string }',
   },
+  {
+    name: "github_api",
+    description:
+      "GitHub REST API GET helper (requires VERA_GITHUB_TOKEN). Optional VERA_GITHUB_API_ALLOWLIST=comma-separated path prefixes.",
+    argsHint: '{ "path": string }',
+  },
+  {
+    name: "slack_post",
+    description:
+      "Post a short message via Slack Incoming Webhook (requires VERA_SLACK_INCOMING_WEBHOOK_URL). Not interactive OAuth.",
+    argsHint: '{ "text": string }',
+  },
 ];
 
 const TOOL_MANIFEST = augmentManifest(BASE_TOOL_MANIFEST);
